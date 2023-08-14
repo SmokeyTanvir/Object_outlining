@@ -1,0 +1,9 @@
+﻿  program.cpp
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\external_libraries\include\utility\camera.h(110): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\external_libraries\include\utility\camera.h(111): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\external_libraries\include\utility\camera.h(118): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\external_libraries\include\utility\camera.h(119): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\outline\program.cpp(46): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\outline\program.cpp(47): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\tamim\onedrive\documents\github\object_outlining\outline\outline\program.cpp(64): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  outline.vcxproj -> C:\Users\tamim\OneDrive\Documents\GitHub\Object_outlining\outline\Debug\outline.exe
