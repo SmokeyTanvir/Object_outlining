@@ -10,6 +10,7 @@ void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
 int main() {
 	// window creation
 	glfwInit();
+	glfwWindowHint(GLFW_SAMPLES, 8);
 	GLFWwindow* window = glfwCreateWindow(window_width, window_height, "program", nullptr, nullptr);
 	if (window == NULL) {
 		std::cout << "ERROR::WINDOW CREATION:FAILED\n\n";
@@ -24,6 +25,7 @@ int main() {
 		std::cout << "ERROR::FAILED TO INITIALIZE GLAD\n\n";
 	}
 	// Enable depth, stencil testing
+	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
@@ -47,12 +49,38 @@ int main() {
 	lastY = window_height / 2;
 
 	// 3d Models
-	Model floor("models/floor/floor.obj");
-	Model planet("models/planet/planet.obj");
+	Model floor("resource/models/floor/floor.obj");
+	Model planet("resource/models/planet/planet.obj");
 
 	// Shaders
-	Shader defaultShader("shaders/default.vert", "shaders/default.frag");
-	Shader outlineShader("shaders/outline.vert", "shaders/outline.frag");
+	Shader defaultShader("resource/shaders/default.vert", "resource/shaders/default.frag");
+	Shader outlineShader("resource/shaders/outline.vert", "resource/shaders/outline.frag");
+	Shader skyboxShader("resource/shaders/skybox.vert", "resource/shaders/skybox.frag");
+
+	// cubemap texture path
+	vector<std::string> faces =
+	{
+		"resource/skybox/posx.jpg",
+		"resource/skybox/negx.jpg",
+		"resource/skybox/posy.jpg",
+		"resource/skybox/negy.jpg",
+		"resource/skybox/posz.jpg",
+		"resource/skybox/negz.jpg"
+	};
+	GLuint cubemapTexture = loadCubemap(faces);
+	// buffers for skybox
+	GLuint skyboxVBO, skyboxVAO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glBindVertexArray(skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	// vertex configuration
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	// unbind VBO, VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	// Game Loop
 	while (!glfwWindowShouldClose(window)) {
@@ -77,6 +105,21 @@ int main() {
 		// Drawing Stuff
 		// ----------------------
 		glStencilMask(0x00);
+		// draw skybox
+		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+		skyboxShader.use();
+		glm::mat4 skyboxView;
+		skyboxView = glm::mat4(glm::mat3(view)); // remove translation from the view matrix
+		skyboxShader.setMat4("view", skyboxView);
+		skyboxShader.setMat4("projection", projection);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // set depth function back to default
+
 		/* Drawing the floor */
 		glm::mat4 floorModel(1.0f);
 		floor.setMVP(defaultShader, floorModel, view, projection);
@@ -88,23 +131,24 @@ int main() {
 		glStencilMask(0xFF);
 		// Draw the model
 		glm::mat4 planetModel(1.0f);
+		planetPosition = glm::vec3(planetPos[0], planetPos[1], planetPos[2]);
 		planetModel = glm::translate(planetModel, planetPosition);
 		planet.setMVP(defaultShader, planetModel, view, projection);
 		planet.Draw(defaultShader);
+		glStencilMask(0x00);
 
 		/* Drawing the outline */
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 		planetModel = glm::scale(planetModel, glm::vec3(outlineScale));
 		outlineShader.use();
 		outlineShader.setMVP(planetModel, view, projection);
 		planet.Draw(outlineShader);
 
-		// re-enable depth testing and stencil testing
+		// re-enable depth testing
 		glEnable(GL_DEPTH_TEST);
+		// re-enable stencil testing
 		glStencilMask(0xFF);
-
 
 		// start ImGUI frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -123,6 +167,7 @@ int main() {
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 100.0f));
 		ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f));
 		ImGui::Begin("planet");
+		ImGui::SliderFloat3("position", planetPos, -10.0f, 10.0f);
 		ImGui::SliderFloat("outline", &outlineScale, 1.001f, 1.05f);
 		ImGui::End();
 

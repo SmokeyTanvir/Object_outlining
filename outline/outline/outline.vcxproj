@@ -158,6 +158,8 @@
     <ClInclude Include="program.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resource\shaders\skybox.frag" />
+    <None Include="resource\shaders\skybox.vert" />
     <None Include="shaders\default.frag" />
     <None Include="shaders\default.vert" />
     <None Include="shaders\outline.frag" />
