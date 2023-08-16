@@ -29,6 +29,13 @@ The libraries are included with the project. But if you want, you can install th
 4. Click and hold the left mouse button to move around the scene.
 5, Use the WASD keys to control the movement of the camera.
 
+## Screenshots
+![OpenGL Planet Outline](screenshots/ss1.png)
+![OpenGL Planet Outline](screenshots/ss2.png)
+![OpenGL Planet Outline](screenshots/ss3.png)
+![OpenGL Planet Outline](screenshots/ss4.png)
+
+
 ## Implementation Details 📝
 The program follows these general steps:
 
