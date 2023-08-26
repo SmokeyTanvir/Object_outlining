@@ -1,4 +1,4 @@
-# OpenGL Planet Outline Program with Stencil Buffers 🪐✨
+# OpenGL Object Outlining with Stencil Buffers 🪐✨
 
 This is a simple OpenGL program that demonstrates how to create an outline effect around a 3D object using stencil buffers. The program uses the GLFW library for window creation, GLAD for OpenGL function loading, and ASSIMP for loading a simple planet model. The outline effect is achieved by rendering the object twice: once as a solid object and once as an outline, using stencil testing to mask out the interior. 🎮🌌
 
